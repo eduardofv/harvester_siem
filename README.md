@@ -1,4 +1,4 @@
-# Scraper para el SIEM - Sistema de Informaición Empresarial Mexicano
+# Scraper para el SIEM - Sistema de Información Empresarial Mexicano
 ## *En Rust*
 
 
