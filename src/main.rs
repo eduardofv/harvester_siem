@@ -1,5 +1,6 @@
 use reqwest::blocking::Client;
 use serde_json::{Map, Value};
+use std::collections::HashMap;
 use std::fs;
 
 struct Catalog {
@@ -18,8 +19,6 @@ fn load_catalog_definition() -> Map<String, Value> {
 }
 
 fn get_catalog(client: &Client, cat_name: &str, url: &str) -> Value {
-    let activo = true.to_string();
-    let todos = true.to_string();
     let response = client.get(url).send()
         .expect(&format!("Could not get catalog {}", cat_name))
         .text()
@@ -29,7 +28,7 @@ fn get_catalog(client: &Client, cat_name: &str, url: &str) -> Value {
         .expect(&format!("Could not parse JSON {}", response))
 }
 
-fn save_catalog(cat_name: &str, jsn: Value) -> std::io::Result<()> {
+fn save_catalog(cat_name: &str, jsn: &Value) -> std::io::Result<()> {
     let text = jsn.to_string();
         //.expect(&format!("Could not serialize catalog {}", cat_name));
     let fname = format!("data/siem-catalogo-{}.json", cat_name);
@@ -37,19 +36,32 @@ fn save_catalog(cat_name: &str, jsn: Value) -> std::io::Result<()> {
     Ok(())
 }
 
+fn get_and_save_catalogs(client: &Client, catdef: Map<String, Value>) -> std::io::Result<HashMap<String, Value>> {
+    let mut catalogs = HashMap::new();
+
+    for (cat_name, url) in catdef {
+        let url = url.as_str().unwrap();
+        let cat_name_l = cat_name;//.clone();
+        //println!("{}, {}", cat_name, url);
+        let cat_json = get_catalog(&client, &cat_name_l, url);
+        save_catalog(&cat_name_l, &cat_json)?;
+        catalogs.insert(cat_name_l.to_owned(), cat_json);
+    }
+
+    Ok(catalogs)
+}
+
 fn main() {
     let client = Client::new();
 
     let catdef = load_catalog_definition();
-    //println!("{:?}", catdef);
-
-    for (cat_name, url) in catdef {
-        let url = url.as_str().unwrap();
-        let cat_name = cat_name.as_str();
-        println!("{}, {}", cat_name, url);
-        let cat_json = get_catalog(&client, cat_name, url);
-        save_catalog(cat_name, cat_json);
+    let catalogs = get_and_save_catalogs(&client, catdef)
+        .expect("Error in get_and_save catalogs");
+    
+    for i in catalogs["estados"].as_array() {
+        println!("{:?}", i);
     }
+
 
     /*******
     let result = sandbox(client);
