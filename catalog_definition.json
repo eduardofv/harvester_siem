@@ -1,0 +1,8 @@
+{
+	"estados": "https://siem.economia.gob.mx/consultar-registros-criterios-catalogo.json?activo=true&todos=true&tabla=CAT_ENTIDAD_FEDERATIVA",
+	"actividades": "https://siem.economia.gob.mx/consultar-registros-criterios-catalogo.json?activo=true&todos=false&tabla=CAT_ACTIVIDAD",
+	"ubicaciones": "https://siem.economia.gob.mx/consultar-registros-criterios-catalogo.json?activo=true&todos=true&tabla=CAT_TIPO_UBICACION",
+	"tipos_asentamientos": "https://siem.economia.gob.mx/consultar-registros-criterios-catalogo.json?activo=true&todos=true&tabla=CAT_TIPO_ASENTAMIENTO",
+	"tipos_empresas": "https://siem.economia.gob.mx/consultar-registros-criterios-catalogo.json?activo=true&todos=true&tabla=CAT_TIPO_EMPRESA",
+	"tipos_instalacion": "https://siem.economia.gob.mx/consultar-registros-criterios-catalogo.json?activo=true&todos=true&tabla=CAT_TIPO_INSTALACION"
+}
