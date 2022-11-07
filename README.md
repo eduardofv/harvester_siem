@@ -5,4 +5,4 @@
 
 https://siem.economia.gob.mx/ui/consultaestablecimientopublico/1739
 
-
+Una buena acalaración: https://users.rust-lang.org/t/is-this-an-error-on-reqwest-blocking-send-documentation/83855
