@@ -29,6 +29,14 @@ fn get_catalog(client: &Client, cat_name: &str, url: &str) -> Value {
         .expect(&format!("Could not parse JSON {}", response))
 }
 
+fn save_catalog(cat_name: &str, jsn: Value) -> std::io::Result<()> {
+    let text = jsn.to_string();
+        //.expect(&format!("Could not serialize catalog {}", cat_name));
+    let fname = format!("data/siem-catalogo-{}.json", cat_name);
+    fs::write(fname, text)?;
+    Ok(())
+}
+
 fn main() {
     let client = Client::new();
 
@@ -39,8 +47,8 @@ fn main() {
         let url = url.as_str().unwrap();
         let cat_name = cat_name.as_str();
         println!("{}, {}", cat_name, url);
-        let cat = get_catalog(&client, cat_name, url);
-        println!("{:?}", cat);
+        let cat_json = get_catalog(&client, cat_name, url);
+        save_catalog(cat_name, cat_json);
     }
 
     /*******
