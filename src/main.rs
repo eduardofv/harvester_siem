@@ -3,10 +3,6 @@ use serde_json::{Map, Value};
 use std::collections::HashMap;
 use std::fs;
 
-struct Catalog {
-    table_name: String,
-}
-
 fn load_catalog_definition() -> Map<String, Value> {
     let text = fs::read_to_string("catalog_definition.json")
         .expect("Could not read catalog_definition.json");
@@ -14,7 +10,7 @@ fn load_catalog_definition() -> Map<String, Value> {
         .expect("Could not parse json for 'catalog_definition.json");
     let catdef = catdef_json.as_object()
         .expect("Error json.as_object").clone();
-    println!("{:?}", catdef);
+    //println!("{:?}", catdef);
     catdef
 }
 
@@ -51,16 +47,62 @@ fn get_and_save_catalogs(client: &Client, catdef: Map<String, Value>) -> std::io
     Ok(catalogs)
 }
 
+fn load_catalogs(catdef: Map<String, Value>) -> std::io::Result<HashMap<String, Value>> {
+    let mut catalogs = HashMap::new();
+
+    for (cat_name, _) in catdef {
+        let fname = format!("data/siem-catalogo-{}.json", cat_name);
+        let cat_string = fs::read_to_string(fname)?;
+        let cat_json = serde_json::from_str(&cat_string)
+            .expect(&format!("Could nor parse json for {}", cat_string));
+        catalogs.insert(cat_name.to_owned(), cat_json);
+    }
+
+    Ok(catalogs)
+}
+
+fn get_municipios(client: &Client, id_estado: u64) -> Value {
+    //assert!(id_estado > 0 && id_estado < 33);
+
+    let url = format!("https://siem.economia.gob.mx/municipios-x-edo?idEntidadFederativa={}", id_estado);
+    println!("{}", url);
+    
+    let response = client.get(url).send()
+        .expect(&format!("Could not get municipios {}", id_estado))
+        .text()
+        .expect(&format!("Could not get text from municipios {}", id_estado));
+
+    serde_json::from_str(&response)
+        .expect(&format!("Could not parse JSON {}", response))
+}
+
+fn get_and_save_municipios(client: &Client, estados_json: &Value) -> std::io::Result<HashMap<u64, Value>> {
+    let mut municipios = HashMap::new();
+
+    for estado in estados_json.as_array().unwrap() {
+        let id = estado["id"].as_u64().unwrap();
+        let mun_estado = get_municipios(&client, id);
+        municipios.insert(id, mun_estado);
+    }
+    println!("{}", municipios.len());
+    Ok(municipios)
+}
+
 fn main() {
     let client = Client::new();
 
     let catdef = load_catalog_definition();
+
     let catalogs = get_and_save_catalogs(&client, catdef)
         .expect("Error in get_and_save catalogs");
-    
-    for i in catalogs["estados"].as_array() {
-        println!("{:?}", i);
-    }
+    //let catalogs = load_catalogs(catdef)
+    //    .expect("Error loading catalogs");
+
+    let municipios = get_and_save_municipios(&client, &catalogs["estados"]);
+
+    //for i in catalogs["estados"].as_array().unwrap() {
+    //    println!("{:?}", i["descripcion"]);
+    //}
 
 
     /*******
