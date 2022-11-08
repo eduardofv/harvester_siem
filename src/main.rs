@@ -3,22 +3,26 @@ use serde_json::{Map, Value, json};
 use std::collections::HashMap;
 use std::fs;
 
-pub mod catalogs;
 use crate::catalogs::*;
+pub mod catalogs;
 
+use crate::serp::*;
+pub mod serp;
 
 fn main() {
     let client = Client::new();
 
     let catdef = load_catalog_definition();
 
+    let res = get_serp_full_list(&client);
+
     //let catalogs = get_and_save_catalogs(&client, catdef)
     //    .expect("Error in get_and_save catalogs");
     //let catalogs = load_catalogs(catdef)
     //    .expect("Error loading catalogs");
 
-    let municipios = load_municipios();
-    println!("{}", municipios.unwrap().len());
+    //let municipios = load_municipios();
+    //println!("{}", municipios.unwrap().len());
     //let municipios = get_and_save_municipios(&client, &catalogs["estados"]);
 
     //for i in catalogs["estados"].as_array().unwrap() {
