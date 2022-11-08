@@ -1,4 +1,7 @@
-.DS_Store
 /info
 /data
 /target
+.DS_Store
+stdout
+stderr
+nohup

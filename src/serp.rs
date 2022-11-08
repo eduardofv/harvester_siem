@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::fs;
 
 
-pub fn get_serp_page(client: &Client, page: usize) -> Result<Value, reqwest::Error>  {
+fn get_serp_page(client: &Client, page: usize) -> Result<Value, reqwest::Error>  {
     
     let url = format!("https://siem.economia.gob.mx/establecimientos-publicos-x-criterios?id=&catEntidadFederativaFk=0&catActividad=0&catCamaraFk=&nombreComercial=&importa=2&exporta=2&publico=2&catEdoEstablecimientoFk=0&pageNum={}&orderBy=&desc=0",
                       page);
@@ -37,7 +37,7 @@ pub fn get_serp_full_list(client: &Client) -> Value {
     let full :&mut Vec<Value> = list["list"].as_array_mut().unwrap();
 
     let mut page_index: u64 = 2;
-    while page_index < 10 {//max_page_index {
+    while page_index < max_page_index {
         let mut next_page = get_serp_page(&client, page_index as usize);
         match next_page {
             Ok(mut current) => {
@@ -50,22 +50,13 @@ pub fn get_serp_full_list(client: &Client) -> Value {
                 } else {
                     eprintln!("Could not get mut ref to list for page {page_index}");
                 }
-                /*
-                if next_page_list != json!(null) {
-                    if let Some(next_page_list_ref) = next_page_list.as_array_mut() {
-                        full.append(&mut next_page_list_ref);
-                    } else {
-                        eprintln!("Could not get mut ref to list for page {page_index}");
-                    }
-                }
-                else {
-                    eprintln!("Could not get json list page {page_index}");
-                }
-                */
             },
             Err(err) => eprintln!("Could not get page {page_index}. Error: {err}"),
         }
         page_index += 1;
+        if page_index % 100 == 0 {
+            println!("{page_index} serp pages scraped");
+        }
     }
 
     println!("full serp list len: {:?}", full.len());
