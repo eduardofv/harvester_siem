@@ -26,14 +26,37 @@ pub fn get_serp_full_list(client: &Client) -> Value {
     let mut list = get_serp_page(&client, 1)
         .expect("No se pudo leer la pagina 1");
 
-    let max_page = list["pages"].as_u64().unwrap();
-    println!("max: {max_page}\nlist: {:?}", list["list"].as_array()); 
-
-    let mut second = get_serp_page(&client, 2)
-        .expect("Err");
-
+    let max_page_index = list["pages"].as_u64().unwrap();
     let full :&mut Vec<Value> = list["list"].as_array_mut().unwrap();
-    full.append(&mut second["list"].as_array_mut().unwrap());
+
+    let mut page_index: u64 = 2;
+    while page_index < 10 {//max_page_index {
+        let mut next_page = get_serp_page(&client, page_index as usize);
+        match next_page {
+            Ok(mut current) => {
+                let next_page_list = &mut current["list"]; 
+                if let Some(next_page_list_ref) = next_page_list.as_array_mut() {
+                    full.append(next_page_list_ref);
+                } else {
+                    eprintln!("Could not get mut ref to list for page {page_index}");
+                }
+                /*
+                if next_page_list != json!(null) {
+                    if let Some(next_page_list_ref) = next_page_list.as_array_mut() {
+                        full.append(&mut next_page_list_ref);
+                    } else {
+                        eprintln!("Could not get mut ref to list for page {page_index}");
+                    }
+                }
+                else {
+                    eprintln!("Could not get json list page {page_index}");
+                }
+                */
+            },
+            Err(err) => eprintln!("Could not get page {page_index}. Error: {err}"),
+        }
+        page_index += 1;
+    }
 
     println!("{:?}", full);
 
