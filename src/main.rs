@@ -1,5 +1,5 @@
 use reqwest::blocking::Client;
-use serde_json::{Map, Value};
+use serde_json::{Map, Value, json};
 use std::collections::HashMap;
 use std::fs;
 
@@ -76,14 +76,22 @@ fn get_municipios(client: &Client, id_estado: u64) -> Value {
         .expect(&format!("Could not parse JSON {}", response))
 }
 
-fn get_and_save_municipios(client: &Client, estados_json: &Value) -> std::io::Result<HashMap<u64, Value>> {
-    let mut municipios = HashMap::new();
+//fn get_and_save_municipios(client: &Client, estados_json: &Value) -> std::io::Result<HashMap<u64, Value>> {
+fn get_and_save_municipios(client: &Client, estados_json: &Value) -> std::io::Result<Map<String, Value>> {
+    let mut municipios = Map::new();
 
     for estado in estados_json.as_array().unwrap() {
+        println!("{:?}", estado);
         let id = estado["id"].as_u64().unwrap();
         let mun_estado = get_municipios(&client, id);
-        municipios.insert(id, mun_estado);
+        let jid = id.to_string();
+        municipios.insert(jid, mun_estado);
     }
+
+    let text = json!(municipios).to_string();
+    let fname = format!("data/siem-catalogo-municipios.json");
+    fs::write(fname, text)?;
+
     println!("{}", municipios.len());
     Ok(municipios)
 }
