@@ -1,7 +1,8 @@
 use reqwest::blocking::Client;
 use serde_json::{Map, Value, json};
 use std::collections::HashMap;
-use std::fs;
+use std::{fs, thread, time};
+use chrono;
 
 
 fn get_serp_page(client: &Client, page: usize) -> Result<Value, reqwest::Error>  {
@@ -54,9 +55,11 @@ pub fn get_serp_full_list(client: &Client) -> Value {
             Err(err) => eprintln!("Could not get page {page_index}. Error: {err}"),
         }
         page_index += 1;
-        if page_index % 100 == 0 {
-            println!("{page_index} serp pages scraped");
+        if page_index % 10 == 0 {
+            println!("{}\tINFO {page_index} serp pages scraped", chrono::offset::Local::now());
         }
+        //courtesy delay
+        thread::sleep(time::Duration::from_millis(100));
     }
 
     println!("full serp list len: {:?}", full.len());
