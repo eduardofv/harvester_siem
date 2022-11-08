@@ -96,17 +96,30 @@ fn get_and_save_municipios(client: &Client, estados_json: &Value) -> std::io::Re
     Ok(municipios)
 }
 
+
+fn load_municipios() -> std::io::Result<Map<String, Value>> {
+    
+    let fname = format!("data/siem-catalogo-municipios.json");
+    let cat_string = fs::read_to_string(fname)?;
+    let municipios = serde_json::from_str(&cat_string)
+            .expect(&format!("Could nor parse json for municipios"));
+
+    Ok(municipios)
+}
+
 fn main() {
     let client = Client::new();
 
     let catdef = load_catalog_definition();
 
-    let catalogs = get_and_save_catalogs(&client, catdef)
-        .expect("Error in get_and_save catalogs");
+    //let catalogs = get_and_save_catalogs(&client, catdef)
+    //    .expect("Error in get_and_save catalogs");
     //let catalogs = load_catalogs(catdef)
     //    .expect("Error loading catalogs");
 
-    let municipios = get_and_save_municipios(&client, &catalogs["estados"]);
+    let municipios = load_municipios();
+    println!("{}", municipios.unwrap().len());
+    //let municipios = get_and_save_municipios(&client, &catalogs["estados"]);
 
     //for i in catalogs["estados"].as_array().unwrap() {
     //    println!("{:?}", i["descripcion"]);
