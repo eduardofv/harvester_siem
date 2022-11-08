@@ -21,6 +21,13 @@ pub fn get_serp_page(client: &Client, page: usize) -> Result<Value, reqwest::Err
     value
 }
 
+fn save_serp_list(list: Vec<Value>) -> std::io::Result<()> {
+    let text = json!(list).to_string();
+    let fname = format!("data/siem-serp-list.json");
+    fs::write(fname, text)?;
+    Ok(())
+}
+
 pub fn get_serp_full_list(client: &Client) -> Value {
 
     let mut list = get_serp_page(&client, 1)
@@ -37,6 +44,9 @@ pub fn get_serp_full_list(client: &Client) -> Value {
                 let next_page_list = &mut current["list"]; 
                 if let Some(next_page_list_ref) = next_page_list.as_array_mut() {
                     full.append(next_page_list_ref);
+                    if let Err(_) = save_serp_list(full.to_vec()) {
+                        eprintln!("Error saving full list at page {page_index}");
+                    }
                 } else {
                     eprintln!("Could not get mut ref to list for page {page_index}");
                 }
@@ -58,7 +68,7 @@ pub fn get_serp_full_list(client: &Client) -> Value {
         page_index += 1;
     }
 
-    println!("{:?}", full);
+    println!("full serp list len: {:?}", full.len());
 
     list
 
