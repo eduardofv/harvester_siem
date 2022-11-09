@@ -17,7 +17,11 @@ fn main() {
 
     let catdef = load_catalog_definition();
 
-    let detail = get_business(&client, String::from("160744"));
+    let id = String::from("4039");
+    let detail = get_business(&client, &id);
+    save_business(&id, &detail).unwrap_or_else(|error| {
+        eprintln!("Error {} saving {}", error, &id);
+    });
     println!("{:?}", detail);
 
     //let res = load_serp_list();

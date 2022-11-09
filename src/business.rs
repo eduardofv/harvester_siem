@@ -4,6 +4,13 @@ use std::{fs, thread, time};
 use chrono;
 
 
+pub fn save_business(id: &String, data: &Map<String, Value>) -> std::io::Result<()> {
+    let text = json!(data).to_string();
+    let fname = format!("data/establecimientos/{id}.json");
+    fs::write(fname, text)?;
+    Ok(())
+}
+
 pub fn get_siem(client: &Client, url: String) -> Result<Value, reqwest::Error> {
     let response = client.get(url).send()?;
     let value = response.json::<Value>();
@@ -30,7 +37,7 @@ fn get_business_profile(client: &Client, id: &String) -> Result<Value, reqwest::
 }
 
 fn get_business_location(client: &Client, id: &String) -> Result<Value, reqwest::Error> {
-    let url = format!("https://siem.economia.gob.mx/detalle-establecimiento-ubicacion?id={}",
+    let url = format!("https://siem.economia.gob.mx/establecimiento-ubicacion.json?id={}",
                       id);
 
     let detail = get_siem(client, url)?;
@@ -66,7 +73,7 @@ fn get_business_countries(client: &Client, id: &String) -> Result<Value, reqwest
     Ok(detail)
 }
 
-pub fn get_business(client: &Client, id: String) -> Map<String, Value> {
+pub fn get_business(client: &Client, id: &String) -> Map<String, Value> {
     let detail = get_business_detail(client, &id).unwrap_or_else(|error| {
         eprintln!("Error reading detail for id={id}");
         json!(null)
