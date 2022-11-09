@@ -15,14 +15,28 @@ pub mod business;
 fn main() {
     let client = Client::new();
 
-    let catdef = load_catalog_definition();
+    //let catdef = load_catalog_definition();
 
-    let id = String::from("4039");
-    let detail = get_business(&client, &id);
-    save_business(&id, &detail).unwrap_or_else(|error| {
-        eprintln!("Error {} saving {}", error, &id);
-    });
-    println!("{:?}", detail);
+    let serp_list = load_serp_list();
+    println!("{}", serp_list[100..110].len());
+
+    let selected = &serp_list[100..110];
+
+    for biz_id in selected {
+        let id = String::from(biz_id["id"].as_str().unwrap());
+        println!("{}", &id);
+        let biz = get_business(&client, &id);
+        save_business(&id, &biz).unwrap_or_else(|error| {
+            eprintln!("Error {} saving {}", error, &id);
+        });
+    }
+
+    //let id = String::from("4039");
+    //let detail = get_business(&client, &id);
+    //save_business(&id, &detail).unwrap_or_else(|error| {
+    //    eprintln!("Error {} saving {}", error, &id);
+    //});
+    //println!("{:?}", detail);
 
     //let res = load_serp_list();
     //println!("{:?}", res);
