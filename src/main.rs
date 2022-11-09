@@ -9,7 +9,7 @@ pub mod catalogs;
 use crate::serp::*;
 pub mod serp;
 
-use crate::business::*
+use crate::business::*;
 pub mod business;
 
 fn main() {
@@ -17,7 +17,8 @@ fn main() {
 
     let catdef = load_catalog_definition();
 
-    let detail = get_business(1739);
+    let detail = get_business(&client, String::from("160744"));
+    println!("{:?}", detail);
 
     //let res = load_serp_list();
     //println!("{:?}", res);
