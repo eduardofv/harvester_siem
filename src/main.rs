@@ -9,13 +9,18 @@ pub mod catalogs;
 use crate::serp::*;
 pub mod serp;
 
+use crate::business::*
+pub mod business;
+
 fn main() {
     let client = Client::new();
 
     let catdef = load_catalog_definition();
 
-    let res = load_serp_list();
-    println!("{:?}", res);
+    let detail = get_business(1739);
+
+    //let res = load_serp_list();
+    //println!("{:?}", res);
     //let res = get_serp_full_list(&client);
     //println!("{:?}", res);
 

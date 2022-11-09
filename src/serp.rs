@@ -1,6 +1,5 @@
 use reqwest::blocking::Client;
 use serde_json::{Map, Value, json};
-use std::collections::HashMap;
 use std::{fs, thread, time};
 use chrono;
 
