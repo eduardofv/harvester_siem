@@ -1,7 +1,8 @@
 use reqwest::blocking::Client;
 use serde_json::{Map, Value, json};
 use std::collections::HashMap;
-use std::fs;
+use std::{fs, thread, time};
+use chrono;
 
 use crate::catalogs::*;
 pub mod catalogs;
@@ -18,17 +19,21 @@ fn main() {
     //let catdef = load_catalog_definition();
 
     let serp_list = load_serp_list();
-    println!("{}", serp_list[100..110].len());
 
-    let selected = &serp_list[100..110];
+    let selected = &serp_list[100..300];
 
     for biz_id in selected {
         let id = String::from(biz_id["id"].as_str().unwrap());
-        println!("{}", &id);
+        println!("{}\tINFO Scraping {}", chrono::offset::Local::now(), &id);
         let biz = get_business(&client, &id);
         save_business(&id, &biz).unwrap_or_else(|error| {
-            eprintln!("Error {} saving {}", error, &id);
+            eprintln!("{}\rERROR {} saving {}", 
+                      chrono::offset::Local::now(),
+                      error, 
+                      &id);
         });
+        //Courtesy delay
+        thread::sleep(time::Duration::from_millis(33));
     }
 
     //let id = String::from("4039");
