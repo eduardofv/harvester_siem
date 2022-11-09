@@ -14,7 +14,10 @@ fn main() {
 
     let catdef = load_catalog_definition();
 
-    let res = get_serp_full_list(&client);
+    let res = load_serp_list();
+    println!("{:?}", res);
+    //let res = get_serp_full_list(&client);
+    //println!("{:?}", res);
 
     //let catalogs = get_and_save_catalogs(&client, catdef)
     //    .expect("Error in get_and_save catalogs");
@@ -23,7 +26,7 @@ fn main() {
 
     //let municipios = load_municipios();
     //println!("{}", municipios.unwrap().len());
-    //let municipios = get_and_save_municipios(&client, &catalogs["estados"]);
+    //let municipios = get_and_save_municipios(&client, &catalogs[]);
 
     //for i in catalogs["estados"].as_array().unwrap() {
     //    println!("{:?}", i["descripcion"]);

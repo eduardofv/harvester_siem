@@ -4,6 +4,18 @@ use std::collections::HashMap;
 use std::{fs, thread, time};
 use chrono;
 
+pub fn load_serp_list() -> Vec<Value> {
+   let text = fs::read_to_string("data/siem-serp-list.json")
+        .expect("Could not read data/siem-serp-list.json");
+    let list_json: Value = serde_json::from_str(&text)
+        .expect("Could not parse json for data/siem-serp-list.json");
+    //let list = list_json.as_object()
+    //    .expect("Error json.as_object").clone();
+    //println!("{:?}", list_json.as_array());
+
+    //vec![]
+    (&list_json.as_array().unwrap()).to_vec()
+}
 
 fn get_serp_page(client: &Client, page: usize) -> Result<Value, reqwest::Error>  {
     
@@ -29,7 +41,7 @@ fn save_serp_list(list: Vec<Value>) -> std::io::Result<()> {
     Ok(())
 }
 
-pub fn get_serp_full_list(client: &Client) -> Value {
+pub fn get_serp_full_list(client: &Client) -> Vec<Value> {
 
     let mut list = get_serp_page(&client, 1)
         .expect("No se pudo leer la pagina 1");
@@ -38,7 +50,7 @@ pub fn get_serp_full_list(client: &Client) -> Value {
     let full :&mut Vec<Value> = list["list"].as_array_mut().unwrap();
 
     let mut page_index: u64 = 2;
-    while page_index < max_page_index {
+    while page_index < 3 {//max_page_index {
         let mut next_page = get_serp_page(&client, page_index as usize);
         match next_page {
             Ok(mut current) => {
@@ -56,7 +68,8 @@ pub fn get_serp_full_list(client: &Client) -> Value {
         }
         page_index += 1;
         if page_index % 10 == 0 {
-            println!("{}\tINFO {page_index} serp pages scraped", chrono::offset::Local::now());
+            println!("{}\tINFO {page_index} serp pages scraped",
+                     chrono::offset::Local::now());
         }
         //courtesy delay
         thread::sleep(time::Duration::from_millis(100));
@@ -64,7 +77,7 @@ pub fn get_serp_full_list(client: &Client) -> Value {
 
     println!("full serp list len: {:?}", full.len());
 
-    list
+    full.to_vec()
 
     //Result(Ok(first));
 
