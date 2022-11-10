@@ -20,7 +20,7 @@ fn main() {
 
     let serp_list = load_serp_list();
 
-    let selected = &serp_list[0..100];
+    let selected = &serp_list;//[0..100];
 
     for biz_id in selected {
         let id = String::from(biz_id["id"].as_str().unwrap());
