@@ -1,6 +1,6 @@
 use reqwest::blocking::Client;
 use serde_json::{Map, Value, json};
-use std::{fs, thread, time};
+use std::fs;
 use std::path::Path;
 
 
@@ -93,32 +93,32 @@ pub fn get_and_save_business(client: &Client, id: &String, ignore_if_exists: boo
 
 pub fn get_business(client: &Client, id: &String) -> Map<String, Value> {
     let detail = get_business_detail(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading detail for id={id}");
+        eprintln!("Error reading detail for id={id}: {error}");
         json!(null)
     });
 
     let profile = get_business_profile(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading profile for id={id}");
+        eprintln!("Error reading profile for id={id}: {error}");
         json!(null)
     });
 
     let location = get_business_location(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading location for id={id}");
+        eprintln!("Error reading location for id={id}: {error}");
         json!(null)
     });
 
     let products = get_business_products(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading products for id={id}");
+        eprintln!("Error reading products for id={id}: {error}");
         json!(null)
     });
 
     let complement = get_business_complement(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading complement for id={id}");
+        eprintln!("Error reading complement for id={id}: {error}");
         json!(null)
     });
 
     let countries = get_business_countries(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading countries for id={id}");
+        eprintln!("Error reading countries for id={id}: {error}");
         json!(null)
     });
 

@@ -49,8 +49,8 @@ pub fn get_serp_full_list(client: &Client) -> Vec<Value> {
     let full :&mut Vec<Value> = list["list"].as_array_mut().unwrap();
 
     let mut page_index: u64 = 2;
-    while page_index < 3 {//max_page_index {
-        let mut next_page = get_serp_page(&client, page_index as usize);
+    while page_index < max_page_index {
+        let next_page = get_serp_page(&client, page_index as usize);
         match next_page {
             Ok(mut current) => {
                 let next_page_list = &mut current["list"]; 
