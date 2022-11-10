@@ -20,11 +20,13 @@ fn main() {
 
     let serp_list = load_serp_list();
 
-    let selected = &serp_list[100..300];
+    let selected = &serp_list[0..100];
 
     for biz_id in selected {
         let id = String::from(biz_id["id"].as_str().unwrap());
         println!("{}\tINFO Scraping {}", chrono::offset::Local::now(), &id);
+        get_and_save_business(&client, &id, true);
+        /*
         let biz = get_business(&client, &id);
         save_business(&id, &biz).unwrap_or_else(|error| {
             eprintln!("{}\rERROR {} saving {}", 
@@ -32,6 +34,7 @@ fn main() {
                       error, 
                       &id);
         });
+        */
         //Courtesy delay
         thread::sleep(time::Duration::from_millis(33));
     }

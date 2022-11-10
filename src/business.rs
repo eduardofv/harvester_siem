@@ -1,6 +1,7 @@
 use reqwest::blocking::Client;
 use serde_json::{Map, Value, json};
 use std::{fs, thread, time};
+use std::path::Path;
 
 
 pub fn save_business(id: &String, data: &Map<String, Value>) -> std::io::Result<()> {
@@ -70,6 +71,24 @@ fn get_business_countries(client: &Client, id: &String) -> Result<Value, reqwest
     let detail = get_siem(client, url)?;
 
     Ok(detail)
+}
+
+pub fn get_and_save_business(client: &Client, id: &String, ignore_if_exists: bool) {
+
+    if ignore_if_exists {
+        if Path::new(&format!("data/establecimientos/{id}.json")).exists() {
+            eprintln!("Already exists {id}");
+            return;
+        }
+    }
+
+    let biz = get_business(&client, &id);
+    save_business(&id, &biz).unwrap_or_else(|error| {
+        eprintln!("{}\rERROR {} saving {}", 
+              chrono::offset::Local::now(),
+              error, 
+              &id);
+    });
 }
 
 pub fn get_business(client: &Client, id: &String) -> Map<String, Value> {
