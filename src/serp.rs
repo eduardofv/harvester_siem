@@ -77,9 +77,5 @@ pub fn get_serp_full_list(client: &Client) -> Vec<Value> {
     println!("full serp list len: {:?}", full.len());
 
     full.to_vec()
-
-    //Result(Ok(first));
-
-//    for page in (2..
 }
 

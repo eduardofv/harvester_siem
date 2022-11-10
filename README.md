@@ -5,7 +5,7 @@ Scraper para descargar datos de establecimientos del [SIEM](https://siem.economi
 
 *** Esto es trabajo en proceso ***. No es una aplicación ni un repositorio de datos. Es un proyecto que estoy desarrollando para facilitar la descarga de datos del SIEM. Es trabajo en proceso. Actualmente solo son funciones que permiten la descarga por pasos: catálogos, páginas de resultados de búsqueda, establecimientos.
 
-*¿RUST?* Sí, este es un proyecto de aprendizaje.
+*¿RUST?* Sí, este es un proyecto de aprendizaje. Está incompleto y hay mil cosas que están mal hechas, no estándar y no óptimas.
 
 ## Referencias
 
