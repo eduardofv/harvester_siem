@@ -1,6 +1,7 @@
 use reqwest::blocking::Client;
 use serde_json::{Map, Value, json};
-use std::{thread, time};
+use std::{fs, thread, time};
+use std::collections::HashMap;
 use chrono;
 
 use crate::catalogs::*;
@@ -12,19 +13,50 @@ pub mod serp;
 use crate::business::*;
 pub mod business;
 
+
 fn main() {
     let client = Client::new();
 
     //let catdef = load_catalog_definition();
 
     let serp_list = load_serp_list();
-
     let selected = &serp_list;//[0..100];
+
+    let files = fs::read_dir("data/establecimientos/");
+    let mut scraped_biz = match files {
+        Ok(files) => {
+            let mut scraped_biz = HashMap::new();
+            for file in files {
+                if let Ok(file) = file {
+                    scraped_biz.insert(file.file_name().into_string().unwrap(), 1usize);
+                } else {
+                    eprintln!("Error with a file entry reading data/establecimientos");
+                }
+            }
+            scraped_biz
+        },
+        Error => { 
+            HashMap::<String, usize>::new()
+        }
+    };
+
+/*
+    for (key, value) in scraped_biz.into_iter() {
+        println!("{key}");
+    }
+*/
 
     for biz_id in selected {
         let id = String::from(biz_id["id"].as_str().unwrap());
-        println!("{}\tINFO Scraping {}", chrono::offset::Local::now(), &id);
-        get_and_save_business(&client, &id, true);
+        let filename = format!("{id}.json");
+        if let Some(_) = scraped_biz.get(&filename) {
+            println!("{}\tINFO Already exists {}", chrono::offset::Local::now(), &id);
+        } else {
+            println!("{}\tINFO Scraping {}", chrono::offset::Local::now(), &id);
+            get_and_save_business(&client, &id, false);
+            scraped_biz.insert(filename, 1);
+            thread::sleep(time::Duration::from_millis(33));
+        }
         /*
         let biz = get_business(&client, &id);
         save_business(&id, &biz).unwrap_or_else(|error| {
@@ -35,7 +67,6 @@ fn main() {
         });
         */
         //Courtesy delay
-        thread::sleep(time::Duration::from_millis(33));
     }
 
     //let id = String::from("4039");
