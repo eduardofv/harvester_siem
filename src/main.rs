@@ -67,7 +67,7 @@ fn main() {
 
     //let catdef = load_catalog_definition();
 
-    scrap_businesses(&client);
+    //scrap_businesses(&client);
 
     //let id = String::from("4039");
     //let detail = get_business(&client, &id);
@@ -79,10 +79,10 @@ fn main() {
     //let res = load_serp_list();
     //println!("{:?}", res);
     
-    /*
-     * let res = get_serp_full_list(&client, None);
-    println!("{:?}", res);
-    */
+    
+    let res = get_serp_full_list(&client, 30230, 30);
+    //println!("{:?}", res);
+    
 
     //let catalogs = get_and_save_catalogs(&client, catdef)
     //    .expect("Error in get_and_save catalogs");

@@ -40,15 +40,20 @@ fn save_serp_list(list: Vec<Value>) -> std::io::Result<()> {
     Ok(())
 }
 
-pub fn get_serp_full_list(client: &Client) -> Vec<Value> {
+pub fn get_serp_full_list(client: &Client, starting_page: u64, courtesy_delay: u64) 
+    -> Vec<Value> {
 
     let mut list = get_serp_page(&client, 1)
         .expect("No se pudo leer la pagina 1");
 
     let max_page_index = list["pages"].as_u64().unwrap();
+    println!("{}\tINFO There are {max_page_index} serp pages",
+             chrono::offset::Local::now());
     let full :&mut Vec<Value> = list["list"].as_array_mut().unwrap();
 
-    let mut page_index: u64 = 2;
+    let mut page_index: u64 = starting_page;
+    println!("{}\tINFO Starting from page {starting_page} (page 1 is always added)",
+             chrono::offset::Local::now());
     while page_index < max_page_index {
         let next_page = get_serp_page(&client, page_index as usize);
         match next_page {
@@ -71,7 +76,7 @@ pub fn get_serp_full_list(client: &Client) -> Vec<Value> {
                      chrono::offset::Local::now());
         }
         //courtesy delay
-        thread::sleep(time::Duration::from_millis(100));
+        thread::sleep(time::Duration::from_millis(courtesy_delay));
     }
 
     println!("full serp list len: {:?}", full.len());
