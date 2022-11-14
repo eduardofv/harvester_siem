@@ -80,7 +80,7 @@ fn main() {
     //println!("{:?}", res);
     
     
-    let res = get_serp_full_list(&client, 30230, 30);
+    let res = get_serp_full_list(&client, 2, 30);
     //println!("{:?}", res);
     
 
