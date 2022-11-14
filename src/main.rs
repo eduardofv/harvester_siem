@@ -1,8 +1,14 @@
+#[macro_use]
+extern crate log;
+
+use env_logger::Env;
+
 use reqwest::blocking::Client;
 use serde_json::{Map, Value, json};
 use std::{fs, thread, time};
 use std::collections::HashMap;
 use chrono;
+
 
 use crate::catalogs::*;
 pub mod catalogs;
@@ -26,7 +32,7 @@ fn scrap_businesses(client: &Client) -> Option<()> {
                 if let Ok(file) = file {
                     scraped_biz.insert(file.file_name().into_string().unwrap(), 1usize);
                 } else {
-                    eprintln!("Error with a file entry reading data/establecimientos");
+                    error!("Error with a file entry reading data/establecimientos");
                 }
             }
             scraped_biz
@@ -40,9 +46,9 @@ fn scrap_businesses(client: &Client) -> Option<()> {
         let id = String::from(biz_id["id"].as_str().unwrap());
         let filename = format!("{id}.json");
         if let Some(_) = scraped_biz.get(&filename) {
-            println!("{}\tINFO Already exists {}", chrono::offset::Local::now(), &id);
+            info!("Already exists {}", &id);
         } else {
-            println!("{}\tINFO Scraping {}", chrono::offset::Local::now(), &id);
+            info!("Scraping {}", &id);
             get_and_save_business(&client, &id, false);
             scraped_biz.insert(filename, 1);
             thread::sleep(time::Duration::from_millis(33));
@@ -63,6 +69,8 @@ fn scrap_businesses(client: &Client) -> Option<()> {
 
 
 fn main() {
+    env_logger::Builder::from_env(Env::default().default_filter_or("INFO")).init();
+    //env_logger::init();
     let client = Client::new();
 
     //let catdef = load_catalog_definition();

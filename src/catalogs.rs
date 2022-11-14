@@ -65,7 +65,7 @@ pub fn get_municipios(client: &Client, id_estado: u64) -> Value {
     //assert!(id_estado > 0 && id_estado < 33);
 
     let url = format!("https://siem.economia.gob.mx/municipios-x-edo?idEntidadFederativa={}", id_estado);
-    println!("{}", url);
+    //println!("{}", url);
     
     let response = client.get(url).send()
         .expect(&format!("Could not get municipios {}", id_estado))
@@ -81,7 +81,7 @@ pub fn get_and_save_municipios(client: &Client, estados_json: &Value) -> std::io
     let mut municipios = Map::new();
 
     for estado in estados_json.as_array().unwrap() {
-        println!("{:?}", estado);
+        //println!("{:?}", estado);
         let id = estado["id"].as_u64().unwrap();
         let mun_estado = get_municipios(&client, id);
         let jid = id.to_string();
@@ -92,7 +92,7 @@ pub fn get_and_save_municipios(client: &Client, estados_json: &Value) -> std::io
     let fname = format!("data/siem-catalogo-municipios.json");
     fs::write(fname, text)?;
 
-    println!("{}", municipios.len());
+    debug!("{} municipios leídos", municipios.len());
     Ok(municipios)
 }
 

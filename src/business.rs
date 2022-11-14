@@ -77,48 +77,45 @@ pub fn get_and_save_business(client: &Client, id: &String, ignore_if_exists: boo
 
     if ignore_if_exists {
         if Path::new(&format!("data/establecimientos/{id}.json")).exists() {
-            eprintln!("Already exists {id}");
+            error!("Already exists {id}");
             return;
         }
     }
 
     let biz = get_business(&client, &id);
     save_business(&id, &biz).unwrap_or_else(|error| {
-        eprintln!("{}\rERROR {} saving {}", 
-              chrono::offset::Local::now(),
-              error, 
-              &id);
+        error!("Error {} saving {}", error, &id);
     });
 }
 
 pub fn get_business(client: &Client, id: &String) -> Map<String, Value> {
     let detail = get_business_detail(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading detail for id={id}: {error}");
+        error!("Error reading detail for id={id}: {error}");
         json!(null)
     });
 
     let profile = get_business_profile(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading profile for id={id}: {error}");
+        error!("Error reading profile for id={id}: {error}");
         json!(null)
     });
 
     let location = get_business_location(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading location for id={id}: {error}");
+        error!("Error reading location for id={id}: {error}");
         json!(null)
     });
 
     let products = get_business_products(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading products for id={id}: {error}");
+        error!("Error reading products for id={id}: {error}");
         json!(null)
     });
 
     let complement = get_business_complement(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading complement for id={id}: {error}");
+        error!("Error reading complement for id={id}: {error}");
         json!(null)
     });
 
     let countries = get_business_countries(client, &id).unwrap_or_else(|error| {
-        eprintln!("Error reading countries for id={id}: {error}");
+        error!("Error reading countries for id={id}: {error}");
         json!(null)
     });
 

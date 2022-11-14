@@ -47,13 +47,11 @@ pub fn get_serp_full_list(client: &Client, starting_page: u64, courtesy_delay: u
         .expect("No se pudo leer la pagina 1");
 
     let max_page_index = list["pages"].as_u64().unwrap();
-    println!("{}\tINFO There are {max_page_index} serp pages",
-             chrono::offset::Local::now());
+    info!("There are {max_page_index} serp pages");
     let full :&mut Vec<Value> = list["list"].as_array_mut().unwrap();
 
     let mut page_index: u64 = starting_page;
-    println!("{}\tINFO Starting from page {starting_page} (page 1 is always added)",
-             chrono::offset::Local::now());
+    info!("Starting from page {starting_page} (page 1 is always added)");
     while page_index < max_page_index {
         let next_page = get_serp_page(&client, page_index as usize);
         match next_page {
@@ -62,24 +60,23 @@ pub fn get_serp_full_list(client: &Client, starting_page: u64, courtesy_delay: u
                 if let Some(next_page_list_ref) = next_page_list.as_array_mut() {
                     full.append(next_page_list_ref);
                     if let Err(_) = save_serp_list(full.to_vec()) {
-                        eprintln!("Error saving full list at page {page_index}");
+                        error!("Error saving full list at page {page_index}");
                     }
                 } else {
-                    eprintln!("Could not get mut ref to list for page {page_index}");
+                    error!("Could not get mut ref to list for page {page_index}");
                 }
             },
-            Err(err) => eprintln!("Could not get page {page_index}. Error: {err}"),
+            Err(err) => error!("Could not get page {page_index}. Error: {err}"),
         }
         page_index += 1;
         if page_index % 10 == 0 {
-            println!("{}\tINFO {page_index} serp pages scraped",
-                     chrono::offset::Local::now());
+            info!("{page_index} serp pages scraped");
         }
         //courtesy delay
         thread::sleep(time::Duration::from_millis(courtesy_delay));
     }
 
-    println!("full serp list len: {:?}", full.len());
+    debug!("full serp list len: {:?}", full.len());
 
     full.to_vec()
 }
