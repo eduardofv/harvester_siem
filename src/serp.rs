@@ -1,7 +1,6 @@
 use reqwest::blocking::Client;
-use serde_json::{Map, Value, json};
+use serde_json::{Value, json};
 use std::{fs, thread, time};
-use chrono;
 
 pub fn load_serp_list() -> Vec<Value> {
    let text = fs::read_to_string("data/siem-serp-list.json")

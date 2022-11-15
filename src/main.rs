@@ -4,10 +4,9 @@ extern crate log;
 use env_logger::Env;
 
 use reqwest::blocking::Client;
-use serde_json::{Map, Value, json};
+//use serde_json::{Value};
 use std::{fs, thread, time};
 use std::collections::HashMap;
-use chrono;
 
 
 use crate::catalogs::*;
@@ -37,7 +36,7 @@ fn scrap_businesses(client: &Client) -> Option<()> {
             }
             scraped_biz
         },
-        Error => { 
+        Err(_) => { 
             HashMap::<String, usize>::new()
         }
     };
@@ -53,15 +52,6 @@ fn scrap_businesses(client: &Client) -> Option<()> {
             scraped_biz.insert(filename, 1);
             thread::sleep(time::Duration::from_millis(33));
         }
-        /*
-        let biz = get_business(&client, &id);
-        save_business(&id, &biz).unwrap_or_else(|error| {
-            eprintln!("{}\rERROR {} saving {}", 
-                      chrono::offset::Local::now(),
-                      error, 
-                      &id);
-        });
-        */
     }
 
     Some(())
@@ -70,7 +60,6 @@ fn scrap_businesses(client: &Client) -> Option<()> {
 
 fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("INFO")).init();
-    //env_logger::init();
     let client = Client::new();
 
     //let catdef = load_catalog_definition();
@@ -88,8 +77,7 @@ fn main() {
     //println!("{:?}", res);
     
     
-    let res = get_serp_full_list(&client, 2, 30);
-    //println!("{:?}", res);
+    get_serp_full_list(&client, 2, 30);
     
 
     //let catalogs = get_and_save_catalogs(&client, catdef)
@@ -110,38 +98,4 @@ fn main() {
     let result = sandbox(client);
     println!("{:?}", result);
     */
-}
-
-fn sandbox(client: Client) -> Result<(), reqwest::Error> {
-    //detalle establecimiento
-    //let url = "https://siem.economia.gob.mx/detalle-establecimiento?id=1739";
-
-    //catalogo estados
-    let url = "https://siem.economia.gob.mx/municipios-x-edo?idEntidadFederativa=1";
-
-    //404
-    //let url = "https://siem.economia.gob.mx/Mmunicipios-x-edo?idEntidadFederativa=1";
-
-    let response = client.get(url).send()?;
-    println!("\nResponse: {:?}", response);
-
-    let text = response.text().unwrap();
-    println!("\nText: {:?}", text);
-
-    let obj: Value = serde_json::from_str(&text).expect("JSON not well formed");
-    println!("\nJSON Object: {:?}", obj);
-
-    let arr = obj.as_array().unwrap();
-    println!("\nArray?: {:?}", arr);
-
-    /*
-    let v: Vec<Value> = serde_json::from_str(&text).unwrap();
-    
-    for val in &v {
-        println!("{}", val);
-    }
-    */
-
-
-    Ok(())
 }
